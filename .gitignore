@@ -1,0 +1,13 @@
+# binaries
+user-management-api
+*.exe
+
+# database
+data/
+*.db
+
+# environment
+.env
+
+# Go tool cache
+vendor/

@@ -1,0 +1,108 @@
+# User Management API — manual test file
+# Requires VS Code "REST Client" extension (humao.rest-client)
+#
+# Workflow:
+#   1. Start server:  go run ./cmd/main.go
+#   2. Run "Register" → copy the token from the response
+#   3. Paste it into @token below
+#   4. Run the rest in order
+
+@base = http://localhost:8080/api/v1
+@token = PASTE_TOKEN_HERE
+
+
+### 1. Register a new user
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Alice Smith",
+  "email": "alice@example.com",
+  "password": "secret123"
+}
+
+
+### 2. Sign in (get a fresh token)
+POST {{base}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "secret123"
+}
+
+
+### 3. List all users
+GET {{base}}/users
+Authorization: Bearer {{token}}
+
+
+### 4. Search users by email
+GET {{base}}/users?email=alice
+Authorization: Bearer {{token}}
+
+
+### 5. Search with pagination
+GET {{base}}/users?email=&limit=5&offset=0
+Authorization: Bearer {{token}}
+
+
+### 6. Get user by ID  (replace the UUID below)
+GET {{base}}/users/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+
+
+### 7. Update own profile  (replace the UUID — must match token owner)
+PUT {{base}}/users/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Alice Johnson"
+}
+
+
+### --- Error cases ---
+
+### 8. Wrong password → 401
+POST {{base}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "wrongpassword"
+}
+
+
+### 9. Duplicate email → 409
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Alice Clone",
+  "email": "alice@example.com",
+  "password": "secret123"
+}
+
+
+### 10. Missing required field → 400
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "bob@example.com"
+}
+
+
+### 11. No token → 401
+GET {{base}}/users
+
+
+### 12. Update someone else's profile → 403
+PUT {{base}}/users/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Hacker"
+}
