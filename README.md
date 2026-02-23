@@ -58,6 +58,27 @@ All endpoints are prefixed with `/api/v1`.
 { "error": "error_code", "message": "human readable detail" }
 ```
 
+## Testing
+
+### Postman collection
+
+A Postman collection is included in the repository. To use it:
+
+1. Open Postman → **Import** → select the collection file from the repo
+2. Create an environment with the variable `base_url` set to `http://localhost:8080/api/v1`
+3. Run **Register** first — the collection's test script automatically saves the `token` and `user_id` to the environment
+4. All subsequent requests will use those saved values, no manual copy-pasting needed
+
+Recommended order: `Register → Sign In → List Users → Get User → Update User`
+
+### Unit tests
+
+```bash
+go test ./...
+```
+
+Tests run against an in-memory SQLite database — no setup needed, nothing written to disk.
+
 ## Example requests
 
 ```bash
